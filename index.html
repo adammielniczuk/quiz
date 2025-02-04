@@ -688,14 +688,7 @@
       totalScore += questionScore;
 
       // Track correctness with Counter API
-      trackEvent('ANSWER_CHECKED', {
-        questionNumber: question.number,
-        questionText: question.text,
-        correctPicked: correctPicked,
-        incorrectPicked: incorrectPicked,
-        questionScore: questionScore
-      });
-
+      
       // Now user has checked
       hasChecked = true;
       singleActionBtn.textContent = "Next question";
