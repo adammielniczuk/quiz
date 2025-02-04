@@ -501,58 +501,12 @@
 
 
 
-
-    // ------------------------------------------------
-    // NEW: using Counter API to track events
-    // ------------------------------------------------
-    const namespace = 'putCybersecurityQuiz';  // Unique namespace
     
 
 
     
-    /**
-     * trackEvent(action, details)
-     * Our event -> multiple "counter up" calls, depending on what we want to track.
-     */
-    function trackEvent(action, details = {}) {
-      const questionNumber = details.questionNumber || (questions[currentQuestionIndex] && questions[currentQuestionIndex].number);
-      if (!questionNumber) {
-        console.error('Question number is undefined.');
-        return;
-      }
 
-      // Construct the counter URL with question number
-      // Format: /Q{number}_LIKE or /Q{number}_DISLIKE
-      let baseUrl = `https://api.counterapi.dev/v1/${namespace}`;
-      let questionUrl = `${baseUrl}/Q${questionNumber}`;
-      
-      switch (action) {
-        case 'GPT_CLICK':
-          fetch(`${baseUrl}/GPT_CLICK/up`)
-            .catch(err => console.error('Counter API error:', err));
-          break;
-
-        case 'ANSWER_CHECKED':
-          const correctCount = details.correctPicked || 0;
-          const incorrectCount = details.incorrectPicked || 0;
-          // Increment CORRECT
-          for (let i = 0; i < correctCount; i++) {
-            fetch(`${baseUrl}/CORRECT/up`)
-              .catch(err => console.error('Counter API error:', err));
-          }
-          // Increment INCORRECT
-          for (let i = 0; i < incorrectCount; i++) {
-            fetch(`${baseUrl}/INCORRECT/up`)
-              .catch(err => console.error('Counter API error:', err));
-          }
-          break;
-
-      
-
-        default:
-          break;
-      }
-    }
+ 
 
     // Fetch current Like/Dislike counts from the API
     
@@ -578,10 +532,7 @@
     // -----------------------
     startQuizBtn.addEventListener('click', () => {
       // 1) Check if language is selected
-      if (!selectedLanguage) {
-        languageError.style.display = 'block';
-        return;
-      }
+      
       loadQuestions();
   
     });
