@@ -416,23 +416,19 @@
     </button>
     <!-- Landing screen -->
     <div id="landingScreen">
-      <h1>Cybersecurity Quiz</h1>
-      <p>Test yourself with randomly shuffled questions and track your score.</p>
-      <p>
-        <span style="color: #2e7d32;"><b>Green</b></span><b> = Correct,</b> 
-        <span style="color: #f1c40f;"><b>Yellow</b></span><b> = Maybe,</b> 
-        <span style="color: #c62828;"><b>Red</b></span><b> = Incorrect</b>
-      </p>
+      <h1>Quiz</h1>
+
+
 
       <!-- Language Selection -->
       <div id="languageSelection">
-        <img src="https://flagcdn.com/w80/gb.png" alt="English" class="flag-button" id="flag-en" title="English">
+       
         <img src="https://flagcdn.com/w80/pl.png" alt="Polish" class="flag-button" id="flag-pl" title="Polski">
       </div>
       <p id="languageError" style="color: red; margin-top: 10px; display: none;">Please select a language to continue.</p>
 
       <!-- Dropout Toggle (new) -->
-      <label style="display:block;margin-top:15px;">
+      <label style="display:hidden;margin-top:15px;">
         <input type="checkbox" id="dropoutToggle" />
         <i>Remove 1/4th of answers at random<br>(may leave no correct answers)</i>
       </label>
