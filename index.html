@@ -421,12 +421,7 @@
 
 
       <!-- Language Selection -->
-      <div id="languageSelection">
-       
-        <img src="https://flagcdn.com/w80/pl.png" alt="Polish" class="flag-button" id="flag-pl" title="Polski">
-      </div>
-      <p id="languageError" style="color: red; margin-top: 10px; display: none;">Please select a language to continue.</p>
-
+    
       <!-- Dropout Toggle (new) -->
       
 
@@ -482,7 +477,7 @@
     // DOM elements
     // -----------------------
     const landingScreen = document.getElementById('landingScreen');
-    const warningModal = document.getElementById('warningModal');
+    
     const quizContainer = document.getElementById('quizContainer');
 
     const startQuizBtn = document.getElementById('startQuizBtn');
@@ -497,22 +492,15 @@
 
     // Rating area
     const rateAnswersContainer = document.getElementById('rateAnswersContainer');
-    const likeBtn = document.getElementById('likeBtn');
-    const dislikeBtn = document.getElementById('dislikeBtn');
-    const likeCountSpan = document.getElementById('likeCount');
-    const dislikeCountSpan = document.getElementById('dislikeCount');
-    
+
     const endScreen = document.getElementById('endScreen');
     const endMessage = document.getElementById('endMessage');
     const shareResultBtn = document.getElementById('shareResultBtn');
 
     // Language Selection Elements
-    const flagEn = document.getElementById('flag-en');
-    const flagPl = document.getElementById('flag-pl');
-    const languageError = document.getElementById('languageError');
 
-    // Dropout Toggle
-    const dropoutToggle = document.getElementById('dropoutToggle');
+
+
 
     // ------------------------------------------------
     // NEW: using Counter API to track events
@@ -559,17 +547,7 @@
           }
           break;
 
-        case 'LIKE':
-          fetch(`${questionUrl}_LIKE/up`)
-            .then(() => updateLikeDislikeCounts(questionNumber)) // After incrementing, fetch updated counts
-            .catch(err => console.error('Counter API error:', err));
-          break;
-
-        case 'DISLIKE':
-          fetch(`${questionUrl}_DISLIKE/up`)
-            .then(() => updateLikeDislikeCounts(questionNumber)) // After incrementing, fetch updated counts
-            .catch(err => console.error('Counter API error:', err));
-          break;
+      
 
         default:
           break;
@@ -577,24 +555,7 @@
     }
 
     // Fetch current Like/Dislike counts from the API
-    function updateLikeDislikeCounts(questionNumber) {
-      // LIKE
-      fetch(`https://api.counterapi.dev/v1/${namespace}/Q${questionNumber}_LIKE`)
-        .then(response => response.json())
-        .then(data => {
-          likeCountSpan.textContent = data.count;
-        })
-        .catch(err => console.error('Error fetching LIKE count:', err));
-
-      // DISLIKE
-      fetch(`https://api.counterapi.dev/v1/${namespace}/Q${questionNumber}_DISLIKE`)
-        .then(response => response.json())
-        .then(data => {
-          dislikeCountSpan.textContent = data.count;
-        })
-        .catch(err => console.error('Error fetching DISLIKE count:', err));
-    }
-
+    
     // -----------------------
     // Fisher-Yates Shuffle
     // -----------------------
@@ -608,31 +569,10 @@
     // -----------------------
     // Language Selection
     // -----------------------
-    function selectLanguage(lang) {
-      selectedLanguage = lang;
-      // Highlight selected flag
-      if (lang === 'en') {
-        flagEn.classList.add('flag-selected');
-        flagPl.classList.remove('flag-selected');
-      } else if (lang === 'pl') {
-        flagPl.classList.add('flag-selected');
-        flagEn.classList.remove('flag-selected');
-      }
-      // Hide error message if any
-      languageError.style.display = 'none';
-    }
-
-    flagEn.addEventListener('click', () => selectLanguage('en'));
-    flagPl.addEventListener('click', () => selectLanguage('pl'));
-
-    // -----------------------
+    
     // Initialize Default Language
     // -----------------------
-    window.addEventListener('DOMContentLoaded', () => {
-      // Set English as default
-      selectLanguage('en');
-    });
-
+ 
     // -----------------------
     // Start Quiz Flow
     // -----------------------
@@ -642,19 +582,10 @@
         languageError.style.display = 'block';
         return;
       }
-      // 2) Read the dropout toggle value
-      enableDropout = dropoutToggle.checked;
-      
-      // Show warning
-      warningModal.style.display = 'flex';
+      loadQuestions();
+  
     });
 
-    closeWarningBtn.addEventListener('click', () => {
-      warningModal.style.display = 'none';
-      landingScreen.style.display = 'none';
-      quizContainer.style.display = 'block';
-      loadQuestions();
-    });
 
     // -----------------------
     // Fetch questions
@@ -691,7 +622,7 @@
       singleActionBtn.textContent = "Check answers";
       // Hide the "Explain with ChatGPT" button and rating area until after "Check"
       explainBtn.style.display = 'none';
-      rateAnswersContainer.style.display = 'none';
+     
 
       // Clear answers
       answersList.innerHTML = "";
@@ -703,14 +634,7 @@
       let questionAnswers = [...question.answers];
 
       // If dropout is enabled, remove 1/4 of the answers at random
-      if (enableDropout) {
-        const dropoutCount = Math.floor(questionAnswers.length / 4);
-        for (let i = 0; i < dropoutCount; i++) {
-          const randIndex = Math.floor(Math.random() * questionAnswers.length);
-          questionAnswers.splice(randIndex, 1);
-        }
-      }
-
+      
       // Store the final answers that will be rendered
       currentRenderedAnswers = questionAnswers;
 
@@ -734,23 +658,14 @@
       });
 
       // Reset Like/Dislike buttons
-      resetLikeDislikeButtons();
+   
 
       updateScoreDisplay();
     }
 
     // -----------------------
     // Reset Like/Dislike Buttons
-    // -----------------------
-    function resetLikeDislikeButtons() {
-      likeBtn.disabled = false;
-      dislikeBtn.disabled = false;
-      likeBtn.classList.remove('liked');
-      dislikeBtn.classList.remove('disliked');
-      // Ensure default background color
-      likeBtn.style.background = '#7f8c8d'; // Default Gray
-      dislikeBtn.style.background = '#7f8c8d'; // Default Gray
-    }
+
 
     // -----------------------
     // Single Action Button
@@ -832,9 +747,9 @@
       
       // Show the "Explain with ChatGPT" button and rating area
       explainBtn.style.display = 'inline-block';
-      rateAnswersContainer.style.display = 'block';
+
       // Update Like/Dislike counts so user sees the latest
-      updateLikeDislikeCounts(question.number);
+    
 
       updateScoreDisplay();
     }
@@ -891,7 +806,7 @@
     explainBtn.addEventListener('click', () => {
       const question = questions[currentQuestionIndex];
       
-      let explanationPrompt = `Please verify the accuracy of the answers and provide a brief explanation for each.\n\nQuestion: ${question.text}\nAnswers:\n`;
+      let explanationPrompt = `Sprawdź poprawność odpowiedzi i krótko każdą opisz.\n\nPytanie: ${question.text}\nOdpowiedzi:\n`;
       question.answers.forEach((answer, i) => {
         explanationPrompt += `${i + 1}. ${answer.text} (${answer.correctness}?)\n`;
       });
@@ -901,32 +816,14 @@
       window.open(chatGPTUrl, '_blank');
 
       // Track GPT clicks
-      trackEvent('GPT_CLICK', {
-        questionNumber: question.number,
-        questionText: question.text
-      });
+     
     });
 
     // -----------------------
     // LIKE / DISLIKE
     // -----------------------
-    likeBtn.addEventListener('click', () => {
-      if (likeBtn.disabled) return; // Prevent multiple clicks
-      trackEvent('LIKE', { questionNumber: questions[currentQuestionIndex].number });
-      // Change button appearance
-      likeBtn.classList.add('liked');
-      likeBtn.disabled = true;
-      dislikeBtn.disabled = true;
-    });
+    
 
-    dislikeBtn.addEventListener('click', () => {
-      if (dislikeBtn.disabled) return; // Prevent multiple clicks
-      trackEvent('DISLIKE', { questionNumber: questions[currentQuestionIndex].number });
-      // Change button appearance
-      dislikeBtn.classList.add('disliked');
-      dislikeBtn.disabled = true;
-      likeBtn.disabled = true;
-    });
   </script>
   <script>
     const themeToggle = document.getElementById('themeToggle');
