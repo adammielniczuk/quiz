@@ -533,8 +533,12 @@
     startQuizBtn.addEventListener('click', () => {
       // 1) Check if language is selected
       
-      loadQuestions();
+  // Show quiz container
+      
   
+      loadQuestions();
+      landingScreen.style.display = 'none';
+      quizContainer.style.display = 'block';
     });
 
 
