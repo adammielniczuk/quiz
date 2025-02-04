@@ -427,17 +427,14 @@
       </div>
       <p id="languageError" style="color: red; margin-top: 10px; display: none;">Please select a language to continue.</p>
 
-   
+      <!-- Dropout Toggle (new) -->
+      
+
+      <button id="startQuizBtn">Start Quiz</button>
     </div>
 
     <!-- Warning Modal -->
-    <div id="warningModal" class="modal-overlay">
-      <div class="modal">
-        <p><strong>Warning:</strong><br/>The correctness of answers may vary.<br/>Use this quiz for reference only.</p>
-        <button id="closeWarningBtn">Got it!</button>
-      </div>
-    </div>
-
+    
     <!-- Quiz Container -->
     <div id="quizContainer">
       <!-- Score Display -->
@@ -455,6 +452,9 @@
         <button id="explainBtn">Ask ChatGPT</button>
       </div>
 
+      <!-- Rate Proposed Answers -->
+     
+    </div>
 
     <!-- End Screen -->
     <div id="endScreen">
@@ -472,7 +472,7 @@
     let currentQuestionIndex = 0;
     let totalScore = 0.0;           // Our sum of partial credits
     let hasChecked = false;         // Track whether user has clicked "Check"
-    let selectedLanguage = 'en';    // 'en' or 'pl' (default to 'en')
+    let selectedLanguage = 'pl';    // 'en' or 'pl' (default to 'en')
     let enableDropout = false;      // NEW: read from the checkbox
 
     // We store the subset of answers shown to the user so we can score properly
