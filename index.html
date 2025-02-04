@@ -1,0 +1,991 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cybersecurity Quiz</title>
+
+  <!-- Favicon Links -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+  <style>
+    /* --------------------------
+       Basic reset and core styles
+       -------------------------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg-color: #f2f2f5;
+      --text-color: #333;
+      --card-bg: #fff;
+      --card-shadow: rgba(0,0,0,0.1);
+      --btn-bg: #3498db;
+      --btn-hover: #2980b9;
+      --modal-overlay: rgba(0,0,0,0.6);
+      --border-color: #ddd;
+      --correct-color: #2e7d32;
+      --incorrect-color: #c62828;
+      --maybe-color: #f1c40f;
+      --rating-btn-bg: #7f8c8d;
+      --like-active: #16a085;
+      --dislike-active: #c0392b;
+      --explain-btn-bg: #9b59b6;
+      --explain-btn-hover: #8e44ad;
+      --checkbox-border: #cbd5e1;
+      --checkbox-bg: #fff;
+      --checkbox-checked-bg: #3498db;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --text-color: #e0e0e0;
+      --card-bg: #2d2d2d;
+      --card-shadow: rgba(0,0,0,0.3);
+      --btn-bg: #2980b9;
+      --btn-hover: #3498db;
+      --modal-overlay: rgba(0,0,0,0.8);
+      --border-color: #404040;
+      --correct-color: #4caf50;
+      --incorrect-color: #f44336;
+      --maybe-color: #ffd700;
+      --rating-btn-bg: #4a4a4a;
+      --like-active: #2ecc71;
+      --dislike-active: #e74c3c;
+      --explain-btn-bg: #8e44ad;
+      --explain-btn-hover: #9b59b6;
+      --checkbox-border: #4a5568;
+      --checkbox-bg: #2d2d2d;
+      --checkbox-checked-bg: #2980b9;
+    }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    #themeToggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--card-bg);
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 5px var(--card-shadow);
+      transition: transform 0.2s;
+    }
+
+    #themeToggle:hover {
+      transform: scale(1.1);
+    }
+
+
+    h1, h2 {
+      margin-bottom: 10px;
+    }
+
+    /* Container for the entire app */
+    .app-container {
+      max-width: 600px;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    /* -------------
+       Landing Screen
+       ------------- */
+    #landingScreen {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 5px var(--card-shadow);
+    }
+    #landingScreen button {
+      margin-top: 15px;
+      background: var(--btn-bg);
+      color: #e0e0e0;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+    #landingScreen button:hover {
+      background: var(--btn-hover);
+    }
+
+    /* Language Selection */
+    #languageSelection {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .flag-button {
+      width: 60px;
+      height: 40px;
+      border: 2px solid #000;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: border 0.3s;
+    }
+    .flag-button:hover {
+      border: 3px solid #3498db;
+    }
+    .flag-selected {
+      border: 4px solid #3498db;
+    }
+
+    /* ---------------
+       Warning (Modal)
+       --------------- */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      right: 0; bottom: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: var(--modal-overlay);
+      z-index: 999;
+    }
+    .modal {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 6px;
+      text-align: center;
+      max-width: 400px;
+      margin: auto;
+      color: var(--text-color);
+    }
+    .modal p {
+      margin-bottom: 15px;
+    }
+    .modal button {
+      background: var(--btn-bg);
+      color: #e0e0e0;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .modal button:hover {
+      background:var(--btn-hover);
+    }
+
+    /* ---------------
+       Quiz Container
+       --------------- */
+    #quizContainer {
+      display: none;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px var(--card-shadow);
+    }
+
+    /* Card-like styling for each question */
+    .question-card {
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 15px;
+      box-shadow: 0 2px 5px var(--card-shadow);
+    }
+    .questionText{
+      color: var(--text-color)
+    }
+    .question-card h2 {
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      color: var(--text-color);
+    }
+    .answers {
+      list-style: none;
+      margin-top: 10px;
+    }
+    .answers li {
+      margin: 5px 0;
+      display: flex;
+      align-items: center;
+    }
+    .answers li label {
+      margin-left: 8px;
+      cursor: pointer;
+    }
+
+    /* Correct in green */
+    .correct {
+      color: var(--correct-color);
+      font-weight: bold;
+    }
+    /* Incorrect in red */
+    .incorrect {
+      color: var(--incorrect-color);
+      font-weight: bold;
+    }
+    .maybe {
+      color: var(--maybe-color);
+      font-weight: bold;
+    }
+
+
+    /* Single action button */
+    #singleActionBtn, #explainBtn {
+      background: var(--btn-bg);
+      color: #e0e0e0;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+
+    #singleActionBtn:hover, #explainBtn:hover {
+      background: var(--btn-hover);
+    }
+
+    /* The "Explain with ChatGPT" button */
+    #explainBtn {
+      background: var(--explain-btn-bg);
+      color: #e0e0e0;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-right: 10px;
+      margin-left: 10px;
+      display: none;
+    }
+    #explainBtn:hover {
+      background: var(--explain-btn-hover);
+    }
+
+    /* Score display */
+    #scoreDisplay {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 1.2rem;
+    }
+
+    /* -------------
+       End Screen
+       ------------- */
+    #endScreen {
+      display: none;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 5px var(--card-shadow);
+    }
+    #endScreen button {
+      margin-top: 15px;
+      background: var(--btn-bg);
+      color: #e0e0e0;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    #endScreen button:hover {
+      background: var(--btn-hover);
+    }
+
+    /* Rating container: "Rate proposed answers" */
+    #rateAnswersContainer {
+      display: none; /* Show after "Check" */
+      margin-top: 15px; /* Move down a bit */
+      text-align: center;
+    }
+    #rateAnswersContainer p {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    #likeBtn, #dislikeBtn {
+      background: var(--rating-btn-bg);
+      color: #e0e0e0;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+    #likeBtn:hover {
+      background: var(--like-active); /* Green on hover */
+    }
+    #dislikeBtn:hover {
+      background: var(--dislike-active) ; /* Red on hover */
+    }
+    /* Active Like/Dislike styles */
+    .liked {
+      background:var(--like-active) !important; /* Green */
+      cursor: not-allowed;
+    }
+    .disliked {
+      background: var(--dislike-active)  !important; /* Red */
+      cursor: not-allowed;
+    }
+    /* Disabled buttons should not change color */
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 1; /* Prevent graying out */
+    }
+    /* Custom Checkbox Styling */
+    .answers input[type="checkbox"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--checkbox-border);
+      border-radius: 4px;
+      background: var(--checkbox-bg);
+      cursor: pointer;
+      position: relative;
+      margin-right: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .answers input[type="checkbox"]:checked {
+      background: var(--checkbox-checked-bg);
+      border-color: var(--checkbox-checked-bg);
+    }
+
+    .answers input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute;
+      color: white;
+      font-size: 14px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .answers input[type="checkbox"]:hover {
+      border-color: var(--checkbox-checked-bg);
+    }
+
+    .answers input[type="checkbox"]:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .answers li {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .answers li:hover {
+      background: rgba(52, 152, 219, 0.1);
+    }
+
+    .answers label {
+      cursor: pointer;
+      flex: 1;
+      padding-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <!-- App container -->
+  <div class="app-container">
+    <button id="themeToggle" aria-label="Toggle dark mode">
+      🌙
+    </button>
+    <!-- Landing screen -->
+    <div id="landingScreen">
+      <h1>Cybersecurity Quiz</h1>
+      <p>Test yourself with randomly shuffled questions and track your score.</p>
+      <p>
+        <span style="color: #2e7d32;"><b>Green</b></span><b> = Correct,</b> 
+        <span style="color: #f1c40f;"><b>Yellow</b></span><b> = Maybe,</b> 
+        <span style="color: #c62828;"><b>Red</b></span><b> = Incorrect</b>
+      </p>
+
+      <!-- Language Selection -->
+      <div id="languageSelection">
+        <img src="https://flagcdn.com/w80/gb.png" alt="English" class="flag-button" id="flag-en" title="English">
+        <img src="https://flagcdn.com/w80/pl.png" alt="Polish" class="flag-button" id="flag-pl" title="Polski">
+      </div>
+      <p id="languageError" style="color: red; margin-top: 10px; display: none;">Please select a language to continue.</p>
+
+      <!-- Dropout Toggle (new) -->
+      <label style="display:block;margin-top:15px;">
+        <input type="checkbox" id="dropoutToggle" />
+        <i>Remove 1/4th of answers at random<br>(may leave no correct answers)</i>
+      </label>
+
+      <button id="startQuizBtn">Start Quiz</button>
+    </div>
+
+    <!-- Warning Modal -->
+    <div id="warningModal" class="modal-overlay">
+      <div class="modal">
+        <p><strong>Warning:</strong><br/>The correctness of answers may vary.<br/>Use this quiz for reference only.</p>
+        <button id="closeWarningBtn">Got it!</button>
+      </div>
+    </div>
+
+    <!-- Quiz Container -->
+    <div id="quizContainer">
+      <!-- Score Display -->
+      <div id="scoreDisplay">Score: 0/0</div>
+      
+      <!-- Question Card -->
+      <div id="questionCard" class="question-card">
+        <h2 id="questionText">Question will appear here</h2>
+        <ul id="answersList" class="answers"></ul>
+      </div>
+
+      <!-- Single Action Button (Check -> Next) + Explain with ChatGPT -->
+      <div style="text-align:center;">
+        <button id="singleActionBtn">Check answers</button>
+        <button id="explainBtn">Ask ChatGPT</button>
+      </div>
+
+      <!-- Rate Proposed Answers -->
+      <div id="rateAnswersContainer">
+        <p>Rate proposed answers:</p>
+        <button id="likeBtn">
+          👍 <span id="likeCount">0</span>
+        </button>
+        <button id="dislikeBtn">
+          👎 <span id="dislikeCount">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- End Screen -->
+    <div id="endScreen">
+      <h2>Quiz Completed!</h2>
+      <p id="endMessage"></p>
+      <button id="shareResultBtn">Share your result</button>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------
+    // Global variables
+    // -----------------------
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let totalScore = 0.0;           // Our sum of partial credits
+    let hasChecked = false;         // Track whether user has clicked "Check"
+    let selectedLanguage = 'en';    // 'en' or 'pl' (default to 'en')
+    let enableDropout = false;      // NEW: read from the checkbox
+
+    // We store the subset of answers shown to the user so we can score properly
+    let currentRenderedAnswers = [];
+
+    // -----------------------
+    // DOM elements
+    // -----------------------
+    const landingScreen = document.getElementById('landingScreen');
+    const warningModal = document.getElementById('warningModal');
+    const quizContainer = document.getElementById('quizContainer');
+
+    const startQuizBtn = document.getElementById('startQuizBtn');
+    const closeWarningBtn = document.getElementById('closeWarningBtn');
+    
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const questionText = document.getElementById('questionText');
+    const answersList = document.getElementById('answersList');
+    
+    const singleActionBtn = document.getElementById('singleActionBtn');
+    const explainBtn = document.getElementById('explainBtn');
+
+    // Rating area
+    const rateAnswersContainer = document.getElementById('rateAnswersContainer');
+    const likeBtn = document.getElementById('likeBtn');
+    const dislikeBtn = document.getElementById('dislikeBtn');
+    const likeCountSpan = document.getElementById('likeCount');
+    const dislikeCountSpan = document.getElementById('dislikeCount');
+    
+    const endScreen = document.getElementById('endScreen');
+    const endMessage = document.getElementById('endMessage');
+    const shareResultBtn = document.getElementById('shareResultBtn');
+
+    // Language Selection Elements
+    const flagEn = document.getElementById('flag-en');
+    const flagPl = document.getElementById('flag-pl');
+    const languageError = document.getElementById('languageError');
+
+    // Dropout Toggle
+    const dropoutToggle = document.getElementById('dropoutToggle');
+
+    // ------------------------------------------------
+    // NEW: using Counter API to track events
+    // ------------------------------------------------
+    const namespace = 'putCybersecurityQuiz';  // Unique namespace
+    
+
+
+    
+    /**
+     * trackEvent(action, details)
+     * Our event -> multiple "counter up" calls, depending on what we want to track.
+     */
+    function trackEvent(action, details = {}) {
+      const questionNumber = details.questionNumber || (questions[currentQuestionIndex] && questions[currentQuestionIndex].number);
+      if (!questionNumber) {
+        console.error('Question number is undefined.');
+        return;
+      }
+
+      // Construct the counter URL with question number
+      // Format: /Q{number}_LIKE or /Q{number}_DISLIKE
+      let baseUrl = `https://api.counterapi.dev/v1/${namespace}`;
+      let questionUrl = `${baseUrl}/Q${questionNumber}`;
+      
+      switch (action) {
+        case 'GPT_CLICK':
+          fetch(`${baseUrl}/GPT_CLICK/up`)
+            .catch(err => console.error('Counter API error:', err));
+          break;
+
+        case 'ANSWER_CHECKED':
+          const correctCount = details.correctPicked || 0;
+          const incorrectCount = details.incorrectPicked || 0;
+          // Increment CORRECT
+          for (let i = 0; i < correctCount; i++) {
+            fetch(`${baseUrl}/CORRECT/up`)
+              .catch(err => console.error('Counter API error:', err));
+          }
+          // Increment INCORRECT
+          for (let i = 0; i < incorrectCount; i++) {
+            fetch(`${baseUrl}/INCORRECT/up`)
+              .catch(err => console.error('Counter API error:', err));
+          }
+          break;
+
+        case 'LIKE':
+          fetch(`${questionUrl}_LIKE/up`)
+            .then(() => updateLikeDislikeCounts(questionNumber)) // After incrementing, fetch updated counts
+            .catch(err => console.error('Counter API error:', err));
+          break;
+
+        case 'DISLIKE':
+          fetch(`${questionUrl}_DISLIKE/up`)
+            .then(() => updateLikeDislikeCounts(questionNumber)) // After incrementing, fetch updated counts
+            .catch(err => console.error('Counter API error:', err));
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    // Fetch current Like/Dislike counts from the API
+    function updateLikeDislikeCounts(questionNumber) {
+      // LIKE
+      fetch(`https://api.counterapi.dev/v1/${namespace}/Q${questionNumber}_LIKE`)
+        .then(response => response.json())
+        .then(data => {
+          likeCountSpan.textContent = data.count;
+        })
+        .catch(err => console.error('Error fetching LIKE count:', err));
+
+      // DISLIKE
+      fetch(`https://api.counterapi.dev/v1/${namespace}/Q${questionNumber}_DISLIKE`)
+        .then(response => response.json())
+        .then(data => {
+          dislikeCountSpan.textContent = data.count;
+        })
+        .catch(err => console.error('Error fetching DISLIKE count:', err));
+    }
+
+    // -----------------------
+    // Fisher-Yates Shuffle
+    // -----------------------
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    // -----------------------
+    // Language Selection
+    // -----------------------
+    function selectLanguage(lang) {
+      selectedLanguage = lang;
+      // Highlight selected flag
+      if (lang === 'en') {
+        flagEn.classList.add('flag-selected');
+        flagPl.classList.remove('flag-selected');
+      } else if (lang === 'pl') {
+        flagPl.classList.add('flag-selected');
+        flagEn.classList.remove('flag-selected');
+      }
+      // Hide error message if any
+      languageError.style.display = 'none';
+    }
+
+    flagEn.addEventListener('click', () => selectLanguage('en'));
+    flagPl.addEventListener('click', () => selectLanguage('pl'));
+
+    // -----------------------
+    // Initialize Default Language
+    // -----------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      // Set English as default
+      selectLanguage('en');
+    });
+
+    // -----------------------
+    // Start Quiz Flow
+    // -----------------------
+    startQuizBtn.addEventListener('click', () => {
+      // 1) Check if language is selected
+      if (!selectedLanguage) {
+        languageError.style.display = 'block';
+        return;
+      }
+      // 2) Read the dropout toggle value
+      enableDropout = dropoutToggle.checked;
+      
+      // Show warning
+      warningModal.style.display = 'flex';
+    });
+
+    closeWarningBtn.addEventListener('click', () => {
+      warningModal.style.display = 'none';
+      landingScreen.style.display = 'none';
+      quizContainer.style.display = 'block';
+      loadQuestions();
+    });
+
+    // -----------------------
+    // Fetch questions
+    // -----------------------
+    function loadQuestions() {
+      const questionsFile = selectedLanguage === 'pl' ? 'questions_pl.json' : 'questions_en.json';
+      fetch(questionsFile)
+        .then(response => response.json())
+        .then(data => {
+          questions = data;
+          // Shuffle the questions
+          shuffleArray(questions);
+          // Shuffle answers in each question
+          questions.forEach(q => shuffleArray(q.answers));
+          // Initialize quiz state
+          currentQuestionIndex = 0;
+          totalScore = 0.0;
+          hasChecked = false;
+          updateScoreDisplay();
+          showQuestion();
+        })
+        .catch(error => {
+          console.error("Error loading questions:", error);
+          alert("Could not load questions. Make sure you're using a local or remote web server. Check console for details.");
+        });
+    }
+
+    // -----------------------
+    // Show a Question
+    // -----------------------
+    function showQuestion() {
+      // Reset hasChecked for this new question
+      hasChecked = false;
+      singleActionBtn.textContent = "Check answers";
+      // Hide the "Explain with ChatGPT" button and rating area until after "Check"
+      explainBtn.style.display = 'none';
+      rateAnswersContainer.style.display = 'none';
+
+      // Clear answers
+      answersList.innerHTML = "";
+
+      const question = questions[currentQuestionIndex];
+      questionText.innerHTML = `Q${currentQuestionIndex + 1}: ${question.text}&ensp;<i>(id:${question.number})</i>`;
+
+      // Copy all answers for potential dropout
+      let questionAnswers = [...question.answers];
+
+      // If dropout is enabled, remove 1/4 of the answers at random
+      if (enableDropout) {
+        const dropoutCount = Math.floor(questionAnswers.length / 4);
+        for (let i = 0; i < dropoutCount; i++) {
+          const randIndex = Math.floor(Math.random() * questionAnswers.length);
+          questionAnswers.splice(randIndex, 1);
+        }
+      }
+
+      // Store the final answers that will be rendered
+      currentRenderedAnswers = questionAnswers;
+
+      // Render the checkboxes
+      currentRenderedAnswers.forEach((answer, index) => {
+        const li = document.createElement("li");
+        
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `answer-${index}`;
+        checkbox.name = `answerGroup`;
+        checkbox.value = index;
+        
+        const label = document.createElement("label");
+        label.htmlFor = `answer-${index}`;
+        label.textContent = answer.text;
+        
+        li.appendChild(checkbox);
+        li.appendChild(label);
+        answersList.appendChild(li);
+      });
+
+      // Reset Like/Dislike buttons
+      resetLikeDislikeButtons();
+
+      updateScoreDisplay();
+    }
+
+    // -----------------------
+    // Reset Like/Dislike Buttons
+    // -----------------------
+    function resetLikeDislikeButtons() {
+      likeBtn.disabled = false;
+      dislikeBtn.disabled = false;
+      likeBtn.classList.remove('liked');
+      dislikeBtn.classList.remove('disliked');
+      // Ensure default background color
+      likeBtn.style.background = '#7f8c8d'; // Default Gray
+      dislikeBtn.style.background = '#7f8c8d'; // Default Gray
+    }
+
+    // -----------------------
+    // Single Action Button
+    // -----------------------
+    singleActionBtn.addEventListener('click', () => {
+      if (!hasChecked) {
+        checkAnswers();
+      } else {
+        nextQuestion();
+      }
+    });
+
+    // -----------------------
+    // Check Answers
+    // -----------------------
+    function checkAnswers() {
+      const question = questions[currentQuestionIndex];
+      const selectedCheckboxes = document.querySelectorAll('#answersList input[type="checkbox"]:checked');
+      const allCheckboxes = document.querySelectorAll('#answersList input[type="checkbox"]');
+
+      // Reveal correctness among the answers that were actually shown
+      allCheckboxes.forEach((checkbox, i) => {
+        const correctness = currentRenderedAnswers[i].correctness;
+        
+        if (correctness === 'correct') {
+          checkbox.parentElement.classList.add('correct');
+        } else if (correctness === 'maybe') {
+          checkbox.parentElement.classList.add('maybe');
+        } else {
+          checkbox.parentElement.classList.add('incorrect');
+        }
+
+        // Disable all checkboxes after checking
+        checkbox.disabled = true; 
+      });
+
+      // --- SCORING ---
+      // We only score among the subset of answers shown
+      const totalCorrectOrMaybe = currentRenderedAnswers.filter(a => a.correctness === 'correct' || a.correctness === 'maybe').length;
+
+      let correctPicked = 0;
+      let incorrectPicked = 0;
+
+      selectedCheckboxes.forEach(cb => {
+        const idx = parseInt(cb.value);
+        const correctness = currentRenderedAnswers[idx].correctness;
+        if (correctness === 'correct' || correctness === 'maybe') {
+          correctPicked++;
+        } else {
+          incorrectPicked++;
+        }
+      });
+
+      // Fraction of correct answers chosen vs total correct (in the displayed subset)
+      const fractionCorrect = totalCorrectOrMaybe > 0 ? (correctPicked / totalCorrectOrMaybe) : 0;
+      // We subtract a penalty based on how many incorrect we picked relative to total correct
+      const fractionIncorrect = totalCorrectOrMaybe > 0 ? (incorrectPicked / totalCorrectOrMaybe) : 0;
+
+      let questionScore = fractionCorrect - fractionIncorrect;
+
+      // Clamp to [0, 1]
+      if (questionScore < 0) questionScore = 0;
+      if (questionScore > 1) questionScore = 1;
+
+      totalScore += questionScore;
+
+      // Track correctness with Counter API
+      trackEvent('ANSWER_CHECKED', {
+        questionNumber: question.number,
+        questionText: question.text,
+        correctPicked: correctPicked,
+        incorrectPicked: incorrectPicked,
+        questionScore: questionScore
+      });
+
+      // Now user has checked
+      hasChecked = true;
+      singleActionBtn.textContent = "Next question";
+      
+      // Show the "Explain with ChatGPT" button and rating area
+      explainBtn.style.display = 'inline-block';
+      rateAnswersContainer.style.display = 'block';
+      // Update Like/Dislike counts so user sees the latest
+      updateLikeDislikeCounts(question.number);
+
+      updateScoreDisplay();
+    }
+
+    // -----------------------
+    // Next Question
+    // -----------------------
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        showQuestion();
+      } else {
+        showEndScreen();
+      }
+    }
+
+    // -----------------------
+    // End Screen
+    // -----------------------
+    function showEndScreen() {
+      quizContainer.style.display = "none";
+      endScreen.style.display = "block";
+      endMessage.innerHTML = `
+        Your total score is: <strong>${totalScore === Math.floor(totalScore) ? Math.floor(totalScore) : totalScore.toFixed(2)}</strong> / ${questions.length}
+      `;
+    }
+
+    // -----------------------
+    // Update Score
+    // -----------------------
+    function updateScoreDisplay() {
+      const completedQuestions = hasChecked ? (currentQuestionIndex + 1) : currentQuestionIndex;
+      scoreDisplay.textContent = `Score: ${totalScore === Math.floor(totalScore) ? Math.floor(totalScore) : totalScore.toFixed(2)}/${completedQuestions}`;
+    }
+
+    // -----------------------
+    // Share Result
+    // -----------------------
+    shareResultBtn.addEventListener('click', () => {
+      const finalScore = `${totalScore === Math.floor(totalScore) ? Math.floor(totalScore) : totalScore.toFixed(2)}/${questions.length}`;
+      const shareText = `I just scored ${finalScore} on the Cybersecurity quiz! Come and test your knowledge too: https://dromaniv.github.io/quizzer/`;
+
+      if (navigator.share) {
+        navigator.share({ text: shareText })
+          .catch((error) => console.log('Share failed', error));
+      } else {
+        alert(shareText);
+      }
+    });
+
+    // -----------------------
+    // Explain with ChatGPT
+    // -----------------------
+    explainBtn.addEventListener('click', () => {
+      const question = questions[currentQuestionIndex];
+      
+      let explanationPrompt = `Please verify the accuracy of the answers and provide a brief explanation for each.\n\nQuestion: ${question.text}\nAnswers:\n`;
+      question.answers.forEach((answer, i) => {
+        explanationPrompt += `${i + 1}. ${answer.text} (${answer.correctness}?)\n`;
+      });
+
+      // Example ChatGPT link
+      const chatGPTUrl = `https://chat.openai.com/?temporary-chat=true&model=gpt-4o&hints=search&q=${encodeURIComponent(explanationPrompt)}`;
+      window.open(chatGPTUrl, '_blank');
+
+      // Track GPT clicks
+      trackEvent('GPT_CLICK', {
+        questionNumber: question.number,
+        questionText: question.text
+      });
+    });
+
+    // -----------------------
+    // LIKE / DISLIKE
+    // -----------------------
+    likeBtn.addEventListener('click', () => {
+      if (likeBtn.disabled) return; // Prevent multiple clicks
+      trackEvent('LIKE', { questionNumber: questions[currentQuestionIndex].number });
+      // Change button appearance
+      likeBtn.classList.add('liked');
+      likeBtn.disabled = true;
+      dislikeBtn.disabled = true;
+    });
+
+    dislikeBtn.addEventListener('click', () => {
+      if (dislikeBtn.disabled) return; // Prevent multiple clicks
+      trackEvent('DISLIKE', { questionNumber: questions[currentQuestionIndex].number });
+      // Change button appearance
+      dislikeBtn.classList.add('disliked');
+      dislikeBtn.disabled = true;
+      likeBtn.disabled = true;
+    });
+  </script>
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    
+ 
+    const getPreferredTheme = () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        return savedTheme;
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    
+    const applyTheme = (theme) => {
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      themeToggle.innerHTML = theme === 'dark' ? '☀️' : '🌙';
+    };
+
+    
+    applyTheme(getPreferredTheme());
+
+  
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(newTheme);
+    });
+
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+
+
+  </script>
+</body>
+</html>
